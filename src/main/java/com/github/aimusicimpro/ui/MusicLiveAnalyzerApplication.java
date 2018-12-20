@@ -2,7 +2,6 @@ package com.github.aimusicimpro.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.beans.PropertyChangeEvent;
@@ -21,6 +20,11 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
 
 import com.github.aimusicimpro.core.AudioInputConstants;
+import com.github.aimusicimpro.ui.panels.MusicLiveAudioStreamPanel;
+import com.github.aimusicimpro.ui.panels.MusicLiveBPMPanel;
+import com.github.aimusicimpro.ui.panels.MusicLiveKeyPanel;
+import com.github.aimusicimpro.ui.processors.MusicLiveAudioStreamProcessor;
+import com.github.aimusicimpro.ui.processors.MusicLiveFFTProcessor;
 
 import be.tarsos.dsp.AudioDispatcher;
 import be.tarsos.dsp.example.InputPanel;
@@ -42,23 +46,41 @@ public class MusicLiveAnalyzerApplication extends JFrame {
   /** Threadable application */
   private static final long serialVersionUID = -8031486444925100427L;
 
-  /** User Inteface Panel */
-  private JPanel centerPanel;
-
+  /** The current frame */
+  private JFrame frame;
+  
+  // Layout panels 
+  
   /** The audio input panel */
   private JPanel panelAudioInput;
+  
+  /** User Inteface Panel */
+  private JPanel panelCenter;
+
+  /** Result Panel at the bottom */
+  private JPanel panelResult;
+
+  
+  // Content Panels
 
   /** The spectogram panel dsplaying the result of the FFT computation */
   private SpectrogramPanel panelSpectogram;
 
   /** The Audio Stream Panel */
-  private AudioStreamPanel panelAudioStream;
+  private MusicLiveAudioStreamPanel panelAudioStream;
 
+  /** The panel displaying the estimated BPM Value */
+  private MusicLiveBPMPanel panelBPM;
+  
+  /** The panel dsiplaying the estimated Key value */
+  private MusicLiveKeyPanel panelKey;
+  
+  
+  // Audio Engine
+  
   /** The Audio Engine that helps use compute all that is required */
   private AudioDispatcher dispatcher;
 
-  /** The current frame */
-  private JFrame frame;
 
 
   public MusicLiveAnalyzerApplication() {
@@ -77,7 +99,11 @@ public class MusicLiveAnalyzerApplication extends JFrame {
     // initialize the audio stream panel
     initAudioStreamPanel();
 
+    // initialize the result panel ( key + BPM )
+    initResultPanel();
+    
   } 
+
 
 
 
@@ -94,12 +120,12 @@ public class MusicLiveAnalyzerApplication extends JFrame {
     Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
     this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
 
-    int rows = 2;
+    int rows = 3;
     int cols = 0;
     int border = 5;
-    centerPanel = new JPanel( new GridLayout( rows, cols ) );
-    centerPanel.setBorder( BorderFactory.createEmptyBorder( border, border, border, border ) );
-    this.add( centerPanel, BorderLayout.CENTER );
+    panelCenter = new JPanel( new GridLayout( rows, cols ) );
+    panelCenter.setBorder( BorderFactory.createEmptyBorder( border, border, border, border ) );
+    this.add( panelCenter, BorderLayout.CENTER );
   }
 
   /** 
@@ -117,9 +143,9 @@ public class MusicLiveAnalyzerApplication extends JFrame {
           updateInput((Mixer) e.getNewValue());
 
           // remove the input panel
-          centerPanel.remove( panelAudioInput );
-          centerPanel.invalidate();
-          centerPanel.validate();
+          panelCenter.remove( panelAudioInput );
+          panelCenter.invalidate();
+          panelCenter.validate();
 
         } catch (LineUnavailableException err) {
           err.printStackTrace();
@@ -205,22 +231,31 @@ public class MusicLiveAnalyzerApplication extends JFrame {
     JPanel container = new JPanel( new BorderLayout() );
     container.add( panelSpectogram, BorderLayout.CENTER );
     container.setBorder( new TitledBorder( " The Spectogram : FFT computation ") );
-    centerPanel.add( container );
+    panelCenter.add( container );
   }
 
 
   private void initAudioStreamPanel() {
 
     // Create
-    panelAudioStream = new AudioStreamPanel();
+    panelAudioStream = new MusicLiveAudioStreamPanel();
 
     // Add to layout
     JPanel containerPanel = new JPanel( new BorderLayout() );
     containerPanel.add( panelAudioStream, BorderLayout.CENTER );
     containerPanel.setBorder( new TitledBorder( " The Audio Stream Panel " ) ) ;
-    centerPanel.add( containerPanel );
+    panelCenter.add( containerPanel );
   }
 
+  
+
+  private void initResultPanel() {
+    int rows = 1, cols = 2;
+    panelResult = new JPanel( new BorderLayout() );
+    panelKey = new MusicLiveKeyPanel();
+    panelResult.add( panelKey );
+    panelCenter.add( panelResult );
+  }
 
   /**
    * Main
