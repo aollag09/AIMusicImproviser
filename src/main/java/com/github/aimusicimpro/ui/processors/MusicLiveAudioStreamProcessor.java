@@ -1,9 +1,8 @@
 package com.github.aimusicimpro.ui.processors;
 
-import com.github.aimusicimpro.ui.panels.MusicLiveAudioStreamPanel;
-
 import be.tarsos.dsp.AudioEvent;
 import be.tarsos.dsp.AudioProcessor;
+import com.github.aimusicimpro.ui.panels.MusicLiveAudioStreamPanel;
 
 public class MusicLiveAudioStreamProcessor implements AudioProcessor {
 

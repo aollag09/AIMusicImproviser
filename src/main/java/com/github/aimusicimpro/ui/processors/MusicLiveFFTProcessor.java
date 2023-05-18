@@ -1,11 +1,10 @@
 package com.github.aimusicimpro.ui.processors;
 
-import com.github.aimusicimpro.core.AudioInputConstants;
-
 import be.tarsos.dsp.AudioEvent;
 import be.tarsos.dsp.AudioProcessor;
 import be.tarsos.dsp.example.SpectrogramPanel;
 import be.tarsos.dsp.util.fft.FFT;
+import com.github.aimusicimpro.core.AudioInputConstants;
 
 /**
  * The FFT Processor computing the spectrum analysis

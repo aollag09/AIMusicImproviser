@@ -1,6 +1,5 @@
 package com.github.aimusicimpro.ui.panels;
 
-import com.github.aimusicimpro.core.music.theory.Note;
 import com.github.aimusicimpro.ui.components.MusicLiveCirleOfFifthsComponent;
 
 import javax.swing.*;

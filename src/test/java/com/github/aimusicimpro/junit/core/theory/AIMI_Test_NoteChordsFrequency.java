@@ -20,7 +20,8 @@ public class AIMI_Test_NoteChordsFrequency {
         System.out.println(dSharpm7Chord); // D#m7 inversion[0] {D#5[75], F#5[78], A#5[82], C#6[85]}
 
         Scale dSharpScale = dSharpNote.scale("minor");
-        System.out.println(dSharpScale); // D# minor scale {D#5[75], E#5[77], F#5[78], G#5[80], A#5[82], B5[83], C#6[85]}
+        System.out.println(
+                dSharpScale); // D# minor scale {D#5[75], E#5[77], F#5[78], G#5[80], A#5[82], B5[83], C#6[85]}
 
         Key cFlatMajorKey = new Key("Cb", "major");
         System.out.println(cFlatMajorKey); // Cb major key

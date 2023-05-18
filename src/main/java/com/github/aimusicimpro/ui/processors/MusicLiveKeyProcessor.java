@@ -1,12 +1,11 @@
 package com.github.aimusicimpro.ui.processors;
 
-import com.github.aimusicimpro.core.music.theory.Note;
-import com.github.aimusicimpro.ui.panels.MusicLiveKeyPanel;
-
 import be.tarsos.dsp.AudioEvent;
 import be.tarsos.dsp.AudioProcessor;
 import be.tarsos.dsp.pitch.PitchDetectionResult;
 import be.tarsos.dsp.pitch.PitchDetector;
+import com.github.aimusicimpro.core.music.theory.Note;
+import com.github.aimusicimpro.ui.panels.MusicLiveKeyPanel;
 
 public class MusicLiveKeyProcessor implements AudioProcessor {
 

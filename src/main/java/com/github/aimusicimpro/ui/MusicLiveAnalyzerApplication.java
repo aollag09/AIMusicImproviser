@@ -1,24 +1,9 @@
 package com.github.aimusicimpro.ui;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.GridLayout;
-import java.awt.Toolkit;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.DataLine;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.Mixer;
-import javax.sound.sampled.TargetDataLine;
-import javax.swing.BorderFactory;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-import javax.swing.border.TitledBorder;
-
+import be.tarsos.dsp.AudioDispatcher;
+import be.tarsos.dsp.example.InputPanel;
+import be.tarsos.dsp.example.SpectrogramPanel;
+import be.tarsos.dsp.io.jvm.JVMAudioInputStream;
 import com.github.aimusicimpro.core.AudioInputConstants;
 import com.github.aimusicimpro.ui.panels.MusicLiveAudioStreamPanel;
 import com.github.aimusicimpro.ui.panels.MusicLiveBPMPanel;
@@ -26,10 +11,17 @@ import com.github.aimusicimpro.ui.panels.MusicLiveKeyPanel;
 import com.github.aimusicimpro.ui.processors.MusicLiveAudioStreamProcessor;
 import com.github.aimusicimpro.ui.processors.MusicLiveFFTProcessor;
 
-import be.tarsos.dsp.AudioDispatcher;
-import be.tarsos.dsp.example.InputPanel;
-import be.tarsos.dsp.example.SpectrogramPanel;
-import be.tarsos.dsp.io.jvm.JVMAudioInputStream;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.DataLine;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.Mixer;
+import javax.sound.sampled.TargetDataLine;
+import javax.swing.*;
+import javax.swing.border.TitledBorder;
+import java.awt.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 /***
  * Simple Java Application with dedicated User Interface to analyse in real time :

@@ -1,6 +1,6 @@
 package com.github.aimusicimpro.ui.panels;
 
-import javax.swing.JPanel;
+import javax.swing.*;
 
 public class MusicLiveBPMPanel extends JPanel {
 
