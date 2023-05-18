@@ -5,14 +5,14 @@ import be.tarsos.dsp.AudioProcessor;
 import be.tarsos.dsp.pitch.PitchDetectionResult;
 import be.tarsos.dsp.pitch.PitchDetector;
 import com.github.aimusicimpro.core.music.theory.Note;
-import com.github.aimusicimpro.ui.panels.MusicLiveKeyPanel;
+import com.github.aimusicimpro.ui.panels.MusicResultPanel;
 
 public class MusicLiveKeyProcessor implements AudioProcessor {
 
     /**
      * The UI panel
      */
-    public MusicLiveKeyPanel panel;
+    public MusicResultPanel panel;
 
     /**
      * Pitch detector

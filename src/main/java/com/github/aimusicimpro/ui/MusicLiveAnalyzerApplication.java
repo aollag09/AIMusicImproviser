@@ -6,8 +6,8 @@ import be.tarsos.dsp.example.SpectrogramPanel;
 import be.tarsos.dsp.io.jvm.JVMAudioInputStream;
 import com.github.aimusicimpro.core.AudioInputConstants;
 import com.github.aimusicimpro.ui.panels.MusicLiveAudioStreamPanel;
-import com.github.aimusicimpro.ui.panels.MusicLiveBPMPanel;
-import com.github.aimusicimpro.ui.panels.MusicLiveKeyPanel;
+import com.github.aimusicimpro.ui.components.MusicLiveBPMComponent;
+import com.github.aimusicimpro.ui.panels.MusicResultPanel;
 import com.github.aimusicimpro.ui.processors.MusicLiveAudioStreamProcessor;
 import com.github.aimusicimpro.ui.processors.MusicLiveFFTProcessor;
 
@@ -78,12 +78,12 @@ public class MusicLiveAnalyzerApplication extends JFrame {
     /**
      * The panel displaying the estimated BPM Value
      */
-    private MusicLiveBPMPanel panelBPM;
+    private MusicLiveBPMComponent panelBPM;
 
     /**
      * The panel dsiplaying the estimated Key value
      */
-    private MusicLiveKeyPanel panelKey;
+    private MusicResultPanel panelKey;
 
 
     // Audio Engine
@@ -112,7 +112,6 @@ public class MusicLiveAnalyzerApplication extends JFrame {
 
         // initialize the result panel ( key + BPM )
         initResultPanel();
-
     }
 
     /**
@@ -122,20 +121,11 @@ public class MusicLiveAnalyzerApplication extends JFrame {
      * @throws Exception
      */
     public static void main(String[] args) throws Exception {
-
-        SwingUtilities.invokeLater(
-                new Runnable() {
-
-                    @Override
-                    public void run() {
-
-                        // Run the application
-                        MusicLiveAnalyzerApplication app = new MusicLiveAnalyzerApplication();
-                        app.setVisible(true);
-
-                    }
-                });
-
+        SwingUtilities.invokeLater(() -> {
+            // Run the application
+            MusicLiveAnalyzerApplication app = new MusicLiveAnalyzerApplication();
+            app.setVisible(true);
+        });
     }
 
     /**
@@ -255,7 +245,6 @@ public class MusicLiveAnalyzerApplication extends JFrame {
      * Initialize the Spectogram
      */
     private void initSpectogramPanel() {
-
         // Create the panel
         panelSpectogram = new SpectrogramPanel();
 
@@ -267,7 +256,6 @@ public class MusicLiveAnalyzerApplication extends JFrame {
     }
 
     private void initAudioStreamPanel() {
-
         // Create
         panelAudioStream = new MusicLiveAudioStreamPanel();
 
@@ -281,7 +269,7 @@ public class MusicLiveAnalyzerApplication extends JFrame {
     private void initResultPanel() {
         int rows = 1, cols = 2;
         panelResult = new JPanel(new BorderLayout());
-        panelKey = new MusicLiveKeyPanel();
+        panelKey = new MusicResultPanel();
         panelResult.add(panelKey);
         panelCenter.add(panelResult);
     }

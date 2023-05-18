@@ -137,8 +137,6 @@ public class MusicLiveCirleOfFifthsComponent extends JComponent {
      * Quick testing
      */
     public static void main(String[] args) {
-
-        System.out.println(Arrays.toString(MAJOR_KEYS));
         JFrame frame = new JFrame("Circle of Fifths");
         MusicLiveCirleOfFifthsComponent cof = new MusicLiveCirleOfFifthsComponent();
 
@@ -146,15 +144,21 @@ public class MusicLiveCirleOfFifthsComponent extends JComponent {
         frame.add(cof);
         frame.setVisible(true);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-
     }
+
+
+    @Override
+    public Dimension getPreferredSize() {
+        return new Dimension(PREFERRED_WIDTH, PREFERRED_HEIGHT);
+    }
+
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
         Graphics2D g2d = (Graphics2D) g.create();
-        draw("E", g2d);
+        draw("A", g2d);
     }
 
     /**
@@ -405,7 +409,6 @@ public class MusicLiveCirleOfFifthsComponent extends JComponent {
     /**
      * Fill a arc with a specific color
      *
-     * @param minSizeX
      * @param c
      * @param startAngle
      * @param endAngle
@@ -559,7 +562,7 @@ public class MusicLiveCirleOfFifthsComponent extends JComponent {
             current = new Note(MAJOR_KEYS[index]);
             index++;
         }
-        return index;
+        return index - 1;
     }
 
     /**
@@ -584,7 +587,7 @@ public class MusicLiveCirleOfFifthsComponent extends JComponent {
      * Draw degrees ( I, II, III, IV ... )
      * for major only
      *
-     * @param notetone
+     * @param keynotemajor
      * @param bufferedGraphics
      */
     private void drawMajDegrees(Note keynotemajor, Graphics bufferedGraphics) {
@@ -617,7 +620,7 @@ public class MusicLiveCirleOfFifthsComponent extends JComponent {
             majy += getFontSize(SIZE_MAJOR_DEGREE) / 2;
 
             // Compute char
-            String majorkey = MAJOR_DEGREES[j].toString();
+            String majorkey = MAJOR_DEGREES[j];
             char[] data = majorkey.toCharArray();
             int length = data.length;
 
@@ -633,7 +636,7 @@ public class MusicLiveCirleOfFifthsComponent extends JComponent {
      * Draw degrees ( I, II, III, IV ... )
      * for minor only
      *
-     * @param notetone
+     * @param keynotemajor
      * @param bufferedGraphics
      */
     private void drawMinDegrees(Note keynotemajor, Graphics bufferedGraphics) {
