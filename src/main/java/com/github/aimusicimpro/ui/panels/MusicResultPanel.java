@@ -14,16 +14,14 @@ public class MusicResultPanel extends JPanel {
 
     public MusicResultPanel() {
         super();
-        this.setLayout(new BorderLayout());
+        this.setLayout(new GridLayout(1, 3));
         this.setBorder(new TitledBorder("Result Pitch & BPM"));
         this.pitchComponent = new MusicLiveCirleOfFifthsComponent();
 
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-                pitchComponent,
-                new MusicLiveBPMComponent());
-        splitPane.setDividerLocation(0.5);
-
-        this.add(splitPane);
+        this.add(pitchComponent);
+        this.add(new MusicLiveBPMComponent());
+        this.add(new JComponent() {
+        });
     }
 
 

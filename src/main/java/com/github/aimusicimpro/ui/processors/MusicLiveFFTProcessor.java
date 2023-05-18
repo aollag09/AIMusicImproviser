@@ -3,8 +3,13 @@ package com.github.aimusicimpro.ui.processors;
 import be.tarsos.dsp.AudioEvent;
 import be.tarsos.dsp.AudioProcessor;
 import be.tarsos.dsp.example.SpectrogramPanel;
+import be.tarsos.dsp.pitch.PitchDetector;
+import be.tarsos.dsp.pitch.Yin;
 import be.tarsos.dsp.util.fft.FFT;
 import com.github.aimusicimpro.core.AudioInputConstants;
+import com.github.aimusicimpro.ui.components.MusicLiveFFTBarChart;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The FFT Processor computing the spectrum analysis
@@ -16,16 +21,22 @@ public class MusicLiveFFTProcessor implements AudioProcessor {
     /**
      * FFT algorithm API
      */
-    private FFT fft;
+    private final FFT fft;
 
     /**
      * UI Panel
      */
-    private SpectrogramPanel panel;
+    private final SpectrogramPanel spectrogram;
 
-    public MusicLiveFFTProcessor(SpectrogramPanel iPanel) {
-        this.panel = iPanel;
+    private final MusicLiveFFTBarChart barChart;
+
+    PitchDetector detector;
+
+    public MusicLiveFFTProcessor(SpectrogramPanel iPanel, MusicLiveFFTBarChart barChart) {
+        this.spectrogram = iPanel;
+        this.barChart = barChart;
         this.fft = new FFT(AudioInputConstants.DEFAULT_BUFFER_SIZE);
+        this.detector = new Yin(AudioInputConstants.SAMPLE_RATE, AudioInputConstants.DEFAULT_BUFFER_SIZE);
     }
 
 
@@ -34,17 +45,25 @@ public class MusicLiveFFTProcessor implements AudioProcessor {
 
         float[] audioFloatBuffer = audioEvent.getFloatBuffer();
         float[] amplitudes = new float[AudioInputConstants.DEFAULT_BUFFER_SIZE / 2];
-        float[] transformbuffer = new float[AudioInputConstants.DEFAULT_BUFFER_SIZE * 2];
-        System.arraycopy(audioFloatBuffer, 0, transformbuffer, 0, audioFloatBuffer.length);
+        float[] transformBuffer = new float[AudioInputConstants.DEFAULT_BUFFER_SIZE * 2];
+        System.arraycopy(audioFloatBuffer, 0, transformBuffer, 0, audioFloatBuffer.length);
 
         // Compute the DFT
-        fft.forwardTransform(transformbuffer);
-        fft.modulus(transformbuffer, amplitudes);
+        fft.forwardTransform(transformBuffer);
+        fft.modulus(transformBuffer, amplitudes);
 
-        if (panel != null) {
+        if (barChart != null) {
+            barChart.setData(amplitudes);
+            barChart.repaint();
+        }
+
+        // Compute the pitch
+        var pitch = detector.getPitch(audioEvent.getFloatBuffer());
+
+        if (spectrogram != null) {
             // Update the Spectrum panel
-            panel.drawFFT(0, amplitudes, fft);
-            panel.repaint();
+            spectrogram.drawFFT(pitch.getPitch(), amplitudes, fft);
+            spectrogram.repaint();
             return true;
         } else
             return false;

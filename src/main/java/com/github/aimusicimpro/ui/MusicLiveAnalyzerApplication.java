@@ -7,6 +7,7 @@ import be.tarsos.dsp.io.jvm.JVMAudioInputStream;
 import be.tarsos.dsp.pitch.Yin;
 import com.github.aimusicimpro.core.AudioInputConstants;
 import com.github.aimusicimpro.ui.components.MusicLiveBPMComponent;
+import com.github.aimusicimpro.ui.components.MusicLiveFFTBarChart;
 import com.github.aimusicimpro.ui.panels.MusicLiveAudioStreamPanel;
 import com.github.aimusicimpro.ui.panels.MusicResultPanel;
 import com.github.aimusicimpro.ui.processors.MusicLiveAudioStreamProcessor;
@@ -42,11 +43,6 @@ public class MusicLiveAnalyzerApplication extends JFrame {
      */
     private static final long serialVersionUID = -8031486444925100427L;
 
-    /**
-     * The current frame
-     */
-    private JFrame frame;
-
     // Layout panels
 
     /**
@@ -71,6 +67,8 @@ public class MusicLiveAnalyzerApplication extends JFrame {
      * The spectogram panel dsplaying the result of the FFT computation
      */
     private SpectrogramPanel panelSpectogram;
+
+    private MusicLiveFFTBarChart barChart;
 
     /**
      * The Audio Stream Panel
@@ -98,7 +96,10 @@ public class MusicLiveAnalyzerApplication extends JFrame {
 
     public MusicLiveAnalyzerApplication() {
         super("Music Live Analyzer Application");
-        frame = this;
+        /**
+         * The current frame
+         */
+        JFrame frame = this;
 
         // initialize of all the layout
         initlayouts();
@@ -119,8 +120,6 @@ public class MusicLiveAnalyzerApplication extends JFrame {
     /**
      * Main
      *
-     * @param args
-     * @throws Exception
      */
     public static void main(String[] args) throws Exception {
         SwingUtilities.invokeLater(() -> {
@@ -139,11 +138,11 @@ public class MusicLiveAnalyzerApplication extends JFrame {
         this.setTitle("Music Live Analyzer Application");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.pack();
-        this.setSize(800, 600);
+        this.setSize(800, 800);
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
         this.setLocation(dim.width / 2 - this.getSize().width / 2, dim.height / 2 - this.getSize().height / 2);
 
-        int rows = 3;
+        int rows = 4;
         int cols = 0;
         int border = 5;
         panelCenter = new JPanel(new GridLayout(rows, cols));
@@ -177,7 +176,6 @@ public class MusicLiveAnalyzerApplication extends JFrame {
 
                     /**
                      * Update the audio input
-                     * @throws LineUnavailableException
                      */
                     private void updateInput(Mixer iNewMixer) throws LineUnavailableException {
 
@@ -221,7 +219,6 @@ public class MusicLiveAnalyzerApplication extends JFrame {
     /**
      * Initialize the audio dispatcher with all needed processors
      *
-     * @param iAudioInputStream
      */
     private void initAudioDispatcher(JVMAudioInputStream iAudioInputStream) {
         // Create a new dispatcher
@@ -233,7 +230,7 @@ public class MusicLiveAnalyzerApplication extends JFrame {
 
         // The FFT Processor
         dispatcher.addAudioProcessor(
-                new MusicLiveFFTProcessor(panelSpectogram));
+                new MusicLiveFFTProcessor(panelSpectogram, barChart));
 
         // The key detector
         dispatcher.addAudioProcessor(
@@ -256,11 +253,17 @@ public class MusicLiveAnalyzerApplication extends JFrame {
         // Create the panel
         panelSpectogram = new SpectrogramPanel();
 
+        barChart = new MusicLiveFFTBarChart(new float[]{});
+
         // Add to layout
-        JPanel container = new JPanel(new BorderLayout());
-        container.add(panelSpectogram, BorderLayout.CENTER);
-        container.setBorder(new TitledBorder(" The Spectogram : FFT computation "));
-        panelCenter.add(container);
+        JPanel panel = new JPanel(new GridLayout(1, 2));
+        panel.setPreferredSize(new Dimension(400, 400));
+        panel.setBorder(new TitledBorder(" The Spectogram : FFT computation "));
+
+        panel.add(panelSpectogram);
+
+        panel.add(barChart);
+        panelCenter.add(panel);
     }
 
     private void initAudioStreamPanel() {
@@ -275,8 +278,8 @@ public class MusicLiveAnalyzerApplication extends JFrame {
     }
 
     private void initResultPanel() {
-        int rows = 1, cols = 2;
-        panelResult = new JPanel(new BorderLayout());
+        int rows = 1, cols = 3;
+        panelResult = new JPanel(new GridLayout(rows, cols));
         panelKey = new MusicResultPanel();
         panelResult.add(panelKey);
         panelCenter.add(panelResult);
