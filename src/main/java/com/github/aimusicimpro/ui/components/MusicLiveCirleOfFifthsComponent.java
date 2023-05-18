@@ -2,8 +2,6 @@ package com.github.aimusicimpro.ui.components;
 
 import com.github.aimusicimpro.core.music.theory.Music;
 import com.github.aimusicimpro.core.music.theory.Note;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -107,21 +105,11 @@ public class MusicLiveCirleOfFifthsComponent extends JComponent {
      * Color of the characters
      */
     public static final Color COLOR_KEYS_CHAR = new Color(0, 0, 0);
-    public static final Color COLOR_DEGREES_CHAR = new Color(30, 30, 30);
-    public static final Color COLOR_RIGTH_KEY_CHAR = Color.red;
+    public static final Color COLOR_RIGHT_KEY_CHAR = Color.red;
     public static final double SIZE_MAJOR_KEYS = 24.0 / 500.0;
     public static final double SIZE_MINOR_KEYS = 15.0 / 500.0;
     public static final double SIZE_MAJOR_DEGREE = 15.0 / 500.0;
     public static final double SIZE_MINOR_DEGREE = 12.0 / 500.0;
-    /**
-     * Logger
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(MusicLiveCirleOfFifthsComponent.class);
-    /**
-     * serial uid
-     */
-    private static final long serialVersionUID = 1L;
-
 
     // DATA MEMBERS
 
@@ -266,12 +254,11 @@ public class MusicLiveCirleOfFifthsComponent extends JComponent {
 
     /**
      * Draw all the chords with a specific color
-     *
-     * @param keynotemajor
-     * @param bufferedGraphics
      */
-    private void drawMajArcChords(Note keynotemajor, Graphics2D bufferedGraphics) {
-        int keyindex = getKeyIndex(keynotemajor);
+    private void drawMajArcChords(Note keyNoteMajor, Graphics2D bufferedGraphics) {
+        int keyindex = getKeyIndex(keyNoteMajor);
+        if(keyindex == -1)
+            return;
 
         // constants
         double deltaAngle = Math.PI * 2 / NB_KEYS;
@@ -313,12 +300,11 @@ public class MusicLiveCirleOfFifthsComponent extends JComponent {
 
     /**
      * Draw all the chords with a specific color
-     *
-     * @param keynotemajor
-     * @param bufferedGraphics
      */
-    private void drawMinArcChords(Note keynotemajor, Graphics2D bufferedGraphics) {
-        int keyindex = getKeyIndex(keynotemajor);
+    private void drawMinArcChords(Note keyNoteMajor, Graphics2D bufferedGraphics) {
+        int keyindex = getKeyIndex(keyNoteMajor);
+        if(keyindex == -1)
+            return;
 
         // constants
         double deltaAngle = Math.PI * 2 / NB_KEYS;
@@ -360,12 +346,11 @@ public class MusicLiveCirleOfFifthsComponent extends JComponent {
 
     /**
      * Draw all the chords with a specific color
-     *
-     * @param keynotemajor
-     * @param bufferedGraphics
      */
-    private void drawDominantArcChords(Note keynotemajor, Graphics2D bufferedGraphics) {
-        int keyindex = getKeyIndex(keynotemajor);
+    private void drawDominantArcChords(Note keyNoteMajor, Graphics2D bufferedGraphics) {
+        int keyindex = getKeyIndex(keyNoteMajor);
+        if(keyindex == -1)
+            return;
 
         // constants
         double deltaAngle = Math.PI * 2 / NB_KEYS;
@@ -407,12 +392,6 @@ public class MusicLiveCirleOfFifthsComponent extends JComponent {
 
     /**
      * Fill a arc with a specific color
-     *
-     * @param c
-     * @param startAngle
-     * @param endAngle
-     * @param maxSize
-     * @param bufferedGraphics
      */
     private void fillArc(Color c,
                          double startAngle,
@@ -479,13 +458,10 @@ public class MusicLiveCirleOfFifthsComponent extends JComponent {
 
     /**
      * Draws all the Key Letters
-     *
-     * @param keynotemajor
-     * @param bufferedGraphics
      */
-    private void drawKeys(Note keynotemajor, Graphics bufferedGraphics) {
+    private void drawKeys(Note keyNoteMajor, Graphics bufferedGraphics) {
 
-        int keyindex = getKeyIndex(keynotemajor);
+        int keyindex = getKeyIndex(keyNoteMajor);
 
         for (int i = 0; i < NB_KEYS; i++) {
 
@@ -512,14 +488,14 @@ public class MusicLiveCirleOfFifthsComponent extends JComponent {
             majy += getFontSize(SIZE_MAJOR_KEYS) / 2;
 
             // Compute char
-            String majorkey = MAJOR_KEYS[i].toString();
+            String majorkey = MAJOR_KEYS[i];
             char[] data = majorkey.toCharArray();
             int length = data.length;
 
             bufferedGraphics.setFont(new Font("TimesRoman", Font.BOLD, getFontSize(SIZE_MAJOR_KEYS)));
             bufferedGraphics.setColor(COLOR_KEYS_CHAR);
             if (i == keyindex)
-                bufferedGraphics.setColor(COLOR_RIGTH_KEY_CHAR);
+                bufferedGraphics.setColor(COLOR_RIGHT_KEY_CHAR);
             bufferedGraphics.drawChars(data, 0, length, majx, majy);
 
 
@@ -541,7 +517,7 @@ public class MusicLiveCirleOfFifthsComponent extends JComponent {
             bufferedGraphics.setFont(new Font("TimesRoman", Font.PLAIN, getFontSize(SIZE_MINOR_KEYS)));
             bufferedGraphics.setColor(COLOR_KEYS_CHAR);
             if (i == keyindex)
-                bufferedGraphics.setColor(COLOR_RIGTH_KEY_CHAR);
+                bufferedGraphics.setColor(COLOR_RIGHT_KEY_CHAR);
             bufferedGraphics.drawChars(data, 0, length, minx, miny);
 
         }
@@ -550,14 +526,13 @@ public class MusicLiveCirleOfFifthsComponent extends JComponent {
 
     /**
      * Compute the index of the input key
-     *
-     * @param keynotemajor
-     * @return
      */
-    private int getKeyIndex(Note keynotemajor) {
+    private int getKeyIndex(Note keyNoteMajor) {
+        if (keyNoteMajor == null)
+            return -1;
         int index = 0;
         Note current = new Note(MAJOR_KEYS[index]);
-        while (index < NB_KEYS && !current.equals(keynotemajor)) {
+        while (index < NB_KEYS && !current.equals(keyNoteMajor)) {
             current = new Note(MAJOR_KEYS[index]);
             index++;
         }
@@ -566,11 +541,6 @@ public class MusicLiveCirleOfFifthsComponent extends JComponent {
 
     /**
      * Compute the list of case of specific size around the keyindex with a specific offset
-     *
-     * @param keyindex
-     * @param offset
-     * @param size
-     * @return
      */
     private int[] computeRange(int keyindex, int offset, int size) {
         int[] range = new int[size];
@@ -585,16 +555,20 @@ public class MusicLiveCirleOfFifthsComponent extends JComponent {
     /**
      * Draw degrees ( I, II, III, IV ... )
      * for major only
-     *
-     * @param keynotemajor
-     * @param bufferedGraphics
      */
-    private void drawMajDegrees(Note keynotemajor, Graphics bufferedGraphics) {
-        int keyindex = getKeyIndex(keynotemajor);
+    private void drawMajDegrees(Note keyNoteMajor, Graphics bufferedGraphics) {
+        int keyindex = getKeyIndex(keyNoteMajor);
         int majoffset = 1;
         int[] majorlist = computeRange(keyindex, majoffset, NB_DEGREES);
 
         // loop on the major list
+        drawDegree(bufferedGraphics, keyindex, majorlist, CIRCLE_SIZE_MAJOR_KEY, CIRCLE_SIZE_MAJOR_DEGREE,
+                SIZE_MAJOR_DEGREE,
+                MAJOR_DEGREES);
+    }
+
+    private void drawDegree(Graphics bufferedGraphics, int keyindex, int[] majorlist, double circleSizeMajorKey,
+                            double circleSizeMajorDegree, double sizeMajorDegree, String[] majorDegrees) {
         for (int j = 0; j < majorlist.length; j++) {
             int i = majorlist[j];
 
@@ -610,23 +584,23 @@ public class MusicLiveCirleOfFifthsComponent extends JComponent {
             int centery = getHeight() / 2;
 
             // compute start & end point
-            double majsize = (CIRCLE_SIZE_MAJOR_KEY + CIRCLE_SIZE_MAJOR_DEGREE) / 2;
+            double majsize = (circleSizeMajorKey + circleSizeMajorDegree) / 2;
             int majx = (int) (centerx + cos * majsize * getWidth() / 2);
             int majy = (int) (centery + sin * majsize * getHeight() / 2);
 
             // adjust with the size of keys
-            majx += -getFontSize(SIZE_MAJOR_DEGREE) / 2;
-            majy += getFontSize(SIZE_MAJOR_DEGREE) / 2;
+            majx += -getFontSize(sizeMajorDegree) / 2;
+            majy += getFontSize(sizeMajorDegree) / 2;
 
             // Compute char
-            String majorkey = MAJOR_DEGREES[j];
+            String majorkey = majorDegrees[j];
             char[] data = majorkey.toCharArray();
             int length = data.length;
 
-            bufferedGraphics.setFont(new Font("TimesRoman", Font.ITALIC, getFontSize(SIZE_MAJOR_DEGREE)));
+            bufferedGraphics.setFont(new Font("TimesRoman", Font.ITALIC, getFontSize(sizeMajorDegree)));
             bufferedGraphics.setColor(COLOR_KEYS_CHAR);
             if (i == keyindex)
-                bufferedGraphics.setColor(COLOR_RIGTH_KEY_CHAR);
+                bufferedGraphics.setColor(COLOR_RIGHT_KEY_CHAR);
             bufferedGraphics.drawChars(data, 0, length, majx, majy);
         }
     }
@@ -634,12 +608,9 @@ public class MusicLiveCirleOfFifthsComponent extends JComponent {
     /**
      * Draw degrees ( I, II, III, IV ... )
      * for minor only
-     *
-     * @param keynotemajor
-     * @param bufferedGraphics
      */
-    private void drawMinDegrees(Note keynotemajor, Graphics bufferedGraphics) {
-        int keyindex = getKeyIndex(keynotemajor);
+    private void drawMinDegrees(Note keyNoteMajor, Graphics bufferedGraphics) {
+        int keyindex = getKeyIndex(keyNoteMajor);
         int minoffset = 4;
         int[] minorlist = computeRange(keyindex, minoffset, NB_DEGREES);
 
@@ -650,40 +621,8 @@ public class MusicLiveCirleOfFifthsComponent extends JComponent {
         }
 
         // loop on the major list
-        for (int j = 0; j < minorlist.length; j++) {
-            int i = minorlist[j];
-
-            // compute current angle
-            double deltaAngle = Math.PI * 2 / NB_KEYS;
-            double startAngle = -Math.PI / 2;
-            double angle = startAngle + deltaAngle * i;
-            double cos = Math.cos(angle);
-            double sin = Math.sin(angle);
-
-            // center
-            int centerx = getWidth() / 2;
-            int centery = getHeight() / 2;
-
-            // compute start & end point
-            double majsize = (CIRCLE_INTERIOR + CIRCLE_SIZE_MINOR_DEGREE) / 2;
-            int majx = (int) (centerx + cos * majsize * getWidth() / 2);
-            int majy = (int) (centery + sin * majsize * getHeight() / 2);
-
-            // adjust with the size of keys
-            majx += -getFontSize(SIZE_MINOR_DEGREE) / 2;
-            majy += getFontSize(SIZE_MINOR_DEGREE) / 2;
-
-            // Compute char
-            String majorkey = MINOR_DEGREES[j].toString();
-            char[] data = majorkey.toCharArray();
-            int length = data.length;
-
-            bufferedGraphics.setFont(new Font("TimesRoman", Font.ITALIC, getFontSize(SIZE_MINOR_DEGREE)));
-            bufferedGraphics.setColor(COLOR_KEYS_CHAR);
-            if (i == keyindex)
-                bufferedGraphics.setColor(COLOR_RIGTH_KEY_CHAR);
-            bufferedGraphics.drawChars(data, 0, length, majx, majy);
-        }
+        drawDegree(bufferedGraphics, keyindex, minorlist, CIRCLE_INTERIOR, CIRCLE_SIZE_MINOR_DEGREE, SIZE_MINOR_DEGREE,
+                MINOR_DEGREES);
 
     }
 

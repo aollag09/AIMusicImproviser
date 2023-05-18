@@ -6,9 +6,13 @@ import be.tarsos.dsp.pitch.PitchDetectionResult;
 import be.tarsos.dsp.pitch.PitchDetector;
 import com.github.aimusicimpro.core.music.theory.Note;
 import com.github.aimusicimpro.ui.panels.MusicResultPanel;
+import com.google.gson.Gson;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MusicLiveKeyProcessor implements AudioProcessor {
 
+    public static final Logger LOGGER = LoggerFactory.getLogger(MusicLiveKeyProcessor.class);
     /**
      * The UI panel
      */
@@ -29,12 +33,16 @@ public class MusicLiveKeyProcessor implements AudioProcessor {
 
         // Detect the pitch
         PitchDetectionResult result = detector.getPitch(audioEvent.getFloatBuffer());
-        double pitchFreq = result.getPitch();
 
-        // Retrieve the right note associated
-        Note pitchNote = new Note(pitchFreq);
-
-        panel.setPitchNote(pitchNote);
+        if (result.isPitched()) {
+            // Retrieve the right note associated
+            double pitchFreq = result.getPitch();
+            Note pitchNote = new Note(pitchFreq);
+            panel.setPitchNote(pitchNote);
+            LOGGER.info("New Pitch Note : {} and result :  {}", pitchNote, new Gson().toJson(result));
+        } else {
+            panel.setPitchNote(null);
+        }
 
         return false;
     }
@@ -43,9 +51,5 @@ public class MusicLiveKeyProcessor implements AudioProcessor {
     public void processingFinished() {
     }
 
-
-    public void setPitchDetector(PitchDetector iNewDetector) {
-        detector = iNewDetector;
-    }
 
 }
