@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -126,11 +125,14 @@ public class MusicLiveCirleOfFifthsComponent extends JComponent {
 
     // DATA MEMBERS
 
+    private Note key;
+
     /**
      * Basic constructor
      */
     public MusicLiveCirleOfFifthsComponent() {
         super();
+        key = new Note("C");
     }
 
     /**
@@ -158,22 +160,19 @@ public class MusicLiveCirleOfFifthsComponent extends JComponent {
         super.paintComponent(g);
 
         Graphics2D g2d = (Graphics2D) g.create();
-        draw("A", g2d);
+        draw(key, g2d);
     }
 
     /**
      * Draw a key note
      */
-    public void draw(String keytone, Graphics2D bufferedGraphics) {
+    public void draw(Note notetone, Graphics2D bufferedGraphics) {
         // draw background
         bufferedGraphics.setColor(COLOR_BACKGROUND);
         bufferedGraphics.fillRect(0, 0, getWidth(), getHeight());
 
         // draw circles background
         drawCirclesBackground(bufferedGraphics);
-
-        // Compute the note from String
-        Note notetone = new Note(keytone);
 
         // paint the chord with the right colors
         drawMajArcChords(notetone, bufferedGraphics);
@@ -736,4 +735,7 @@ public class MusicLiveCirleOfFifthsComponent extends JComponent {
 
     }
 
+    public void setKey(Note pitchNote) {
+        this.key = pitchNote;
+    }
 }

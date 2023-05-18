@@ -1,5 +1,6 @@
 package com.github.aimusicimpro.ui.panels;
 
+import com.github.aimusicimpro.core.music.theory.Note;
 import com.github.aimusicimpro.ui.components.MusicLiveBPMComponent;
 import com.github.aimusicimpro.ui.components.MusicLiveCirleOfFifthsComponent;
 
@@ -9,13 +10,16 @@ import java.awt.*;
 
 public class MusicResultPanel extends JPanel {
 
+    private final MusicLiveCirleOfFifthsComponent pitchComponent;
+
     public MusicResultPanel() {
         super();
         this.setLayout(new BorderLayout());
-        this.setBorder(new TitledBorder("Result Key & BPM"));
+        this.setBorder(new TitledBorder("Result Pitch & BPM"));
+        this.pitchComponent = new MusicLiveCirleOfFifthsComponent();
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-                new MusicLiveCirleOfFifthsComponent(),
+                pitchComponent,
                 new MusicLiveBPMComponent());
         splitPane.setDividerLocation(0.5);
 
@@ -23,4 +27,7 @@ public class MusicResultPanel extends JPanel {
     }
 
 
+    public void setPitchNote(Note pitchNote) {
+        pitchComponent.setKey(pitchNote);
+    }
 }

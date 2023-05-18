@@ -4,12 +4,14 @@ import be.tarsos.dsp.AudioDispatcher;
 import be.tarsos.dsp.example.InputPanel;
 import be.tarsos.dsp.example.SpectrogramPanel;
 import be.tarsos.dsp.io.jvm.JVMAudioInputStream;
+import be.tarsos.dsp.pitch.Yin;
 import com.github.aimusicimpro.core.AudioInputConstants;
-import com.github.aimusicimpro.ui.panels.MusicLiveAudioStreamPanel;
 import com.github.aimusicimpro.ui.components.MusicLiveBPMComponent;
+import com.github.aimusicimpro.ui.panels.MusicLiveAudioStreamPanel;
 import com.github.aimusicimpro.ui.panels.MusicResultPanel;
 import com.github.aimusicimpro.ui.processors.MusicLiveAudioStreamProcessor;
 import com.github.aimusicimpro.ui.processors.MusicLiveFFTProcessor;
+import com.github.aimusicimpro.ui.processors.MusicLiveKeyProcessor;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -198,7 +200,7 @@ public class MusicLiveAnalyzerApplication extends JFrame {
                         line = (TargetDataLine) iNewMixer.getLine(dataLineInfo);
 
                         // Opens the line with the specified format and requested buffer size
-                        int numberOfSamples = AudioInputConstants.DEFAULT_BUFER_SIZE;
+                        int numberOfSamples = AudioInputConstants.DEFAULT_BUFFER_SIZE;
                         line.open(format, numberOfSamples);
                         line.start();
 
@@ -224,14 +226,20 @@ public class MusicLiveAnalyzerApplication extends JFrame {
     private void initAudioDispatcher(JVMAudioInputStream iAudioInputStream) {
         // Create a new dispatcher
         dispatcher = new AudioDispatcher(iAudioInputStream,
-                AudioInputConstants.DEFAULT_BUFER_SIZE,
-                AudioInputConstants.DEFAULT_BUFER_OVERLAP);
+                AudioInputConstants.DEFAULT_BUFFER_SIZE,
+                AudioInputConstants.DEFAULT_BUFFER_OVERLAP);
 
         /// Add the Audio Processors to the dispatcher
 
         // The FFT Processor
         dispatcher.addAudioProcessor(
                 new MusicLiveFFTProcessor(panelSpectogram));
+
+        // The key detector
+        dispatcher.addAudioProcessor(
+                new MusicLiveKeyProcessor(panelKey,
+                        new Yin(AudioInputConstants.SAMPLE_RATE,
+                                AudioInputConstants.DEFAULT_BUFFER_SIZE)));
 
         // The Simple Audio Sound Wave
         dispatcher.addAudioProcessor(

@@ -19,6 +19,10 @@ public class MusicLiveKeyProcessor implements AudioProcessor {
      */
     public PitchDetector detector;
 
+    public MusicLiveKeyProcessor(MusicResultPanel panel, PitchDetector detector) {
+        this.panel = panel;
+        this.detector = detector;
+    }
 
     @Override
     public boolean process(AudioEvent audioEvent) {
@@ -30,7 +34,7 @@ public class MusicLiveKeyProcessor implements AudioProcessor {
         // Retrieve the right note associated
         Note pitchNote = new Note(pitchFreq);
 
-        //panel.draw(pitchNote);
+        panel.setPitchNote(pitchNote);
 
         return false;
     }

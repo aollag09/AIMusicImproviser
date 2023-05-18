@@ -12,12 +12,12 @@ public class AudioInputConstants {
      * Default value for the size of the buffer.
      * The size of the buffer defines how much samples are processed in one step
      */
-    public static final int DEFAULT_BUFER_SIZE = 1024 * 4;
+    public static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
 
     /**
      * How much consecutive buffers overlap (in samples).
      * Half of the AudioBufferSize is common (512, 1024) for an FFT.
      */
-    public static final int DEFAULT_BUFER_OVERLAP = DEFAULT_BUFER_SIZE / 2;
+    public static final int DEFAULT_BUFFER_OVERLAP = DEFAULT_BUFFER_SIZE / 2;
 
 }

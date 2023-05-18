@@ -25,7 +25,7 @@ public class MusicLiveFFTProcessor implements AudioProcessor {
 
     public MusicLiveFFTProcessor(SpectrogramPanel iPanel) {
         this.panel = iPanel;
-        this.fft = new FFT(AudioInputConstants.DEFAULT_BUFER_SIZE);
+        this.fft = new FFT(AudioInputConstants.DEFAULT_BUFFER_SIZE);
     }
 
 
@@ -33,8 +33,8 @@ public class MusicLiveFFTProcessor implements AudioProcessor {
     public boolean process(AudioEvent audioEvent) {
 
         float[] audioFloatBuffer = audioEvent.getFloatBuffer();
-        float[] amplitudes = new float[AudioInputConstants.DEFAULT_BUFER_SIZE / 2];
-        float[] transformbuffer = new float[AudioInputConstants.DEFAULT_BUFER_SIZE * 2];
+        float[] amplitudes = new float[AudioInputConstants.DEFAULT_BUFFER_SIZE / 2];
+        float[] transformbuffer = new float[AudioInputConstants.DEFAULT_BUFFER_SIZE * 2];
         System.arraycopy(audioFloatBuffer, 0, transformbuffer, 0, audioFloatBuffer.length);
 
         // Compute the DFT

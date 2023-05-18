@@ -22,8 +22,8 @@ public class AudioCoreEngine {
 
         // Create the audio dispatcher from the input audio stream
         dispatcher = new AudioDispatcher(iInputAudioStream,
-                AudioInputConstants.DEFAULT_BUFER_SIZE,
-                AudioInputConstants.DEFAULT_BUFER_OVERLAP);
+                AudioInputConstants.DEFAULT_BUFFER_SIZE,
+                AudioInputConstants.DEFAULT_BUFFER_OVERLAP);
 
     }
 
