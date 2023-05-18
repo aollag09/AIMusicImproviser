@@ -7,29 +7,27 @@ import be.tarsos.dsp.AudioProcessor;
 
 public class MusicLiveAudioStreamProcessor implements AudioProcessor {
 
-  private MusicLiveAudioStreamPanel panel;
+    private MusicLiveAudioStreamPanel panel;
 
-  public MusicLiveAudioStreamProcessor( MusicLiveAudioStreamPanel iPanel ) {
-    this.panel = iPanel;
-  }
-
-  @Override
-  public boolean process(AudioEvent audioEvent) {
-    float[] audioFloatBuffer = audioEvent.getFloatBuffer();
-
-    if( panel != null && panel.drawComponent != null ) {
-      panel.drawComponent.draw(audioFloatBuffer);
-      panel.repaint();
+    public MusicLiveAudioStreamProcessor(MusicLiveAudioStreamPanel iPanel) {
+        this.panel = iPanel;
     }
-    return true;
-  }
 
-  @Override
-  public void processingFinished() {
+    @Override
+    public boolean process(AudioEvent audioEvent) {
+        float[] audioFloatBuffer = audioEvent.getFloatBuffer();
 
-  }
+        if (panel != null && panel.drawComponent != null) {
+            panel.drawComponent.draw(audioFloatBuffer);
+            panel.repaint();
+        }
+        return true;
+    }
 
+    @Override
+    public void processingFinished() {
 
+    }
 
 
 }

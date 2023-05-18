@@ -43,241 +43,256 @@ import be.tarsos.dsp.io.jvm.JVMAudioInputStream;
  */
 public class MusicLiveAnalyzerApplication extends JFrame {
 
-  /** Threadable application */
-  private static final long serialVersionUID = -8031486444925100427L;
+    /**
+     * Threadable application
+     */
+    private static final long serialVersionUID = -8031486444925100427L;
 
-  /** The current frame */
-  private JFrame frame;
-  
-  // Layout panels 
-  
-  /** The audio input panel */
-  private JPanel panelAudioInput;
-  
-  /** User Inteface Panel */
-  private JPanel panelCenter;
+    /**
+     * The current frame
+     */
+    private JFrame frame;
 
-  /** Result Panel at the bottom */
-  private JPanel panelResult;
+    // Layout panels
 
-  
-  // Content Panels
+    /**
+     * The audio input panel
+     */
+    private JPanel panelAudioInput;
 
-  /** The spectogram panel dsplaying the result of the FFT computation */
-  private SpectrogramPanel panelSpectogram;
+    /**
+     * User Inteface Panel
+     */
+    private JPanel panelCenter;
 
-  /** The Audio Stream Panel */
-  private MusicLiveAudioStreamPanel panelAudioStream;
-
-  /** The panel displaying the estimated BPM Value */
-  private MusicLiveBPMPanel panelBPM;
-  
-  /** The panel dsiplaying the estimated Key value */
-  private MusicLiveKeyPanel panelKey;
-  
-  
-  // Audio Engine
-  
-  /** The Audio Engine that helps use compute all that is required */
-  private AudioDispatcher dispatcher;
+    /**
+     * Result Panel at the bottom
+     */
+    private JPanel panelResult;
 
 
+    // Content Panels
 
-  public MusicLiveAnalyzerApplication() {
-    super( "Music Live Analyzer Application" );
-    frame = this;
+    /**
+     * The spectogram panel dsplaying the result of the FFT computation
+     */
+    private SpectrogramPanel panelSpectogram;
 
-    // initialize of all the layout 
-    initlayouts();
+    /**
+     * The Audio Stream Panel
+     */
+    private MusicLiveAudioStreamPanel panelAudioStream;
 
-    // initialize the input source panel
-    initInputPanel();
+    /**
+     * The panel displaying the estimated BPM Value
+     */
+    private MusicLiveBPMPanel panelBPM;
 
-    // initialize the spectogram panel
-    initSpectogramPanel();
-
-    // initialize the audio stream panel
-    initAudioStreamPanel();
-
-    // initialize the result panel ( key + BPM )
-    initResultPanel();
-    
-  } 
-
-
+    /**
+     * The panel dsiplaying the estimated Key value
+     */
+    private MusicLiveKeyPanel panelKey;
 
 
-  /**
-   * Initialize the common layout of the frame 
-   */
-  private void initlayouts() {
-    // Layout editing
-    this.setLayout(new BorderLayout());
-    this.setTitle( "Music Live Analyzer Application");
-    this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    this.pack(); 
-    this.setSize( 800, 600 );
-    Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-    this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
+    // Audio Engine
 
-    int rows = 3;
-    int cols = 0;
-    int border = 5;
-    panelCenter = new JPanel( new GridLayout( rows, cols ) );
-    panelCenter.setBorder( BorderFactory.createEmptyBorder( border, border, border, border ) );
-    this.add( panelCenter, BorderLayout.CENTER );
-  }
-
-  /** 
-   * Initialize the input source panel
-   */
-  private void initInputPanel() {
-    panelAudioInput = new InputPanel();
-    panelAudioInput.setPreferredSize( new Dimension( 0, 100 ));
-    panelAudioInput.addPropertyChangeListener("mixer",
-        new PropertyChangeListener() {
-
-      @Override
-      public void propertyChange(PropertyChangeEvent e) {
-        try {
-          updateInput((Mixer) e.getNewValue());
-
-          // remove the input panel
-          panelCenter.remove( panelAudioInput );
-          panelCenter.invalidate();
-          panelCenter.validate();
-
-        } catch (LineUnavailableException err) {
-          err.printStackTrace();
-        }
-      }
-
-      /**
-       * Update the audio input
-       * @throws LineUnavailableException 
-       */
-      private void updateInput( Mixer iNewMixer ) throws LineUnavailableException {
-
-        if(dispatcher!= null){
-          dispatcher.stop();
-        }
-
-        // Specifies a particular arrangement of data in a sound stream
-        AudioFormat format = new AudioFormat( AudioInputConstants.SAMPLE_RATE,
-            16, 
-            1, 
-            true,
-            false);
-
-        DataLine.Info dataLineInfo = new DataLine.Info(
-            TargetDataLine.class, format);
-
-        // Get the input line
-        TargetDataLine line;
-        line = (TargetDataLine) iNewMixer.getLine(dataLineInfo);
-
-        // Opens the line with the specified format and requested buffer size
-        int numberOfSamples = AudioInputConstants.DEFAULT_BUFER_SIZE;
-        line.open(format, numberOfSamples);
-        line.start();
-
-        // input stream is an input stream with a specified audio format and length
-        AudioInputStream stream = new AudioInputStream(line);
-
-        // Encapsulates an AudioInputStream to make it work with the core TarsosDSP library.
-        JVMAudioInputStream audioStream = new JVMAudioInputStream(stream);
-
-        // Init the audio dispatcher with all processors
-        initAudioDispatcher( audioStream );
-
-      }
-    });
-    this.add( panelAudioInput, BorderLayout.NORTH );
-  }
-
-  /**
-   * Initialize the audio dispatcher with all needed processors
-   * @param iAudioInputStream
-   */
-  private void initAudioDispatcher( JVMAudioInputStream iAudioInputStream ) {
-    // Create a new dispatcher
-    dispatcher = new AudioDispatcher( iAudioInputStream, 
-        AudioInputConstants.DEFAULT_BUFER_SIZE,
-        AudioInputConstants.DEFAULT_BUFER_OVERLAP );
-
-    /// Add the Audio Processors to the dispatcher
-
-    // The FFT Processor
-    dispatcher.addAudioProcessor( 
-        new MusicLiveFFTProcessor( panelSpectogram ) );
-
-    // The Simple Audio Sound Wave
-    dispatcher.addAudioProcessor(
-        new MusicLiveAudioStreamProcessor( panelAudioStream ) );
-
-    // Run the dispatcher (on a new thread).
-    new Thread( dispatcher, "Audio dispatching" ).start();
-  }
-
-  /** 
-   * Initialize the Spectogram
-   */
-  private void initSpectogramPanel() {
-
-    // Create the panel
-    panelSpectogram = new SpectrogramPanel();
-
-    // Add to layout
-    JPanel container = new JPanel( new BorderLayout() );
-    container.add( panelSpectogram, BorderLayout.CENTER );
-    container.setBorder( new TitledBorder( " The Spectogram : FFT computation ") );
-    panelCenter.add( container );
-  }
+    /**
+     * The Audio Engine that helps use compute all that is required
+     */
+    private AudioDispatcher dispatcher;
 
 
-  private void initAudioStreamPanel() {
+    public MusicLiveAnalyzerApplication() {
+        super("Music Live Analyzer Application");
+        frame = this;
 
-    // Create
-    panelAudioStream = new MusicLiveAudioStreamPanel();
+        // initialize of all the layout
+        initlayouts();
 
-    // Add to layout
-    JPanel containerPanel = new JPanel( new BorderLayout() );
-    containerPanel.add( panelAudioStream, BorderLayout.CENTER );
-    containerPanel.setBorder( new TitledBorder( " The Audio Stream Panel " ) ) ;
-    panelCenter.add( containerPanel );
-  }
+        // initialize the input source panel
+        initInputPanel();
 
-  
+        // initialize the spectogram panel
+        initSpectogramPanel();
 
-  private void initResultPanel() {
-    int rows = 1, cols = 2;
-    panelResult = new JPanel( new BorderLayout() );
-    panelKey = new MusicLiveKeyPanel();
-    panelResult.add( panelKey );
-    panelCenter.add( panelResult );
-  }
+        // initialize the audio stream panel
+        initAudioStreamPanel();
 
-  /**
-   * Main
-   * @param args
-   * @throws Exception
-   */
-  public static void main(String[] args) throws Exception {
+        // initialize the result panel ( key + BPM )
+        initResultPanel();
 
-    SwingUtilities.invokeLater(
-        new Runnable() {
+    }
 
-          @Override
-          public void run() {
+    /**
+     * Main
+     *
+     * @param args
+     * @throws Exception
+     */
+    public static void main(String[] args) throws Exception {
 
-            // Run the application 
-            MusicLiveAnalyzerApplication app = new MusicLiveAnalyzerApplication();
-            app.setVisible( true );
+        SwingUtilities.invokeLater(
+                new Runnable() {
 
-          }
-        });
+                    @Override
+                    public void run() {
 
-  }
+                        // Run the application
+                        MusicLiveAnalyzerApplication app = new MusicLiveAnalyzerApplication();
+                        app.setVisible(true);
+
+                    }
+                });
+
+    }
+
+    /**
+     * Initialize the common layout of the frame
+     */
+    private void initlayouts() {
+        // Layout editing
+        this.setLayout(new BorderLayout());
+        this.setTitle("Music Live Analyzer Application");
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.pack();
+        this.setSize(800, 600);
+        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+        this.setLocation(dim.width / 2 - this.getSize().width / 2, dim.height / 2 - this.getSize().height / 2);
+
+        int rows = 3;
+        int cols = 0;
+        int border = 5;
+        panelCenter = new JPanel(new GridLayout(rows, cols));
+        panelCenter.setBorder(BorderFactory.createEmptyBorder(border, border, border, border));
+        this.add(panelCenter, BorderLayout.CENTER);
+    }
+
+    /**
+     * Initialize the input source panel
+     */
+    private void initInputPanel() {
+        panelAudioInput = new InputPanel();
+        panelAudioInput.setPreferredSize(new Dimension(0, 100));
+        panelAudioInput.addPropertyChangeListener("mixer",
+                new PropertyChangeListener() {
+
+                    @Override
+                    public void propertyChange(PropertyChangeEvent e) {
+                        try {
+                            updateInput((Mixer) e.getNewValue());
+
+                            // remove the input panel
+                            panelCenter.remove(panelAudioInput);
+                            panelCenter.invalidate();
+                            panelCenter.validate();
+
+                        } catch (LineUnavailableException err) {
+                            err.printStackTrace();
+                        }
+                    }
+
+                    /**
+                     * Update the audio input
+                     * @throws LineUnavailableException
+                     */
+                    private void updateInput(Mixer iNewMixer) throws LineUnavailableException {
+
+                        if (dispatcher != null) {
+                            dispatcher.stop();
+                        }
+
+                        // Specifies a particular arrangement of data in a sound stream
+                        AudioFormat format = new AudioFormat(AudioInputConstants.SAMPLE_RATE,
+                                16,
+                                1,
+                                true,
+                                false);
+
+                        DataLine.Info dataLineInfo = new DataLine.Info(
+                                TargetDataLine.class, format);
+
+                        // Get the input line
+                        TargetDataLine line;
+                        line = (TargetDataLine) iNewMixer.getLine(dataLineInfo);
+
+                        // Opens the line with the specified format and requested buffer size
+                        int numberOfSamples = AudioInputConstants.DEFAULT_BUFER_SIZE;
+                        line.open(format, numberOfSamples);
+                        line.start();
+
+                        // input stream is an input stream with a specified audio format and length
+                        AudioInputStream stream = new AudioInputStream(line);
+
+                        // Encapsulates an AudioInputStream to make it work with the core TarsosDSP library.
+                        JVMAudioInputStream audioStream = new JVMAudioInputStream(stream);
+
+                        // Init the audio dispatcher with all processors
+                        initAudioDispatcher(audioStream);
+
+                    }
+                });
+        this.add(panelAudioInput, BorderLayout.NORTH);
+    }
+
+    /**
+     * Initialize the audio dispatcher with all needed processors
+     *
+     * @param iAudioInputStream
+     */
+    private void initAudioDispatcher(JVMAudioInputStream iAudioInputStream) {
+        // Create a new dispatcher
+        dispatcher = new AudioDispatcher(iAudioInputStream,
+                AudioInputConstants.DEFAULT_BUFER_SIZE,
+                AudioInputConstants.DEFAULT_BUFER_OVERLAP);
+
+        /// Add the Audio Processors to the dispatcher
+
+        // The FFT Processor
+        dispatcher.addAudioProcessor(
+                new MusicLiveFFTProcessor(panelSpectogram));
+
+        // The Simple Audio Sound Wave
+        dispatcher.addAudioProcessor(
+                new MusicLiveAudioStreamProcessor(panelAudioStream));
+
+        // Run the dispatcher (on a new thread).
+        new Thread(dispatcher, "Audio dispatching").start();
+    }
+
+    /**
+     * Initialize the Spectogram
+     */
+    private void initSpectogramPanel() {
+
+        // Create the panel
+        panelSpectogram = new SpectrogramPanel();
+
+        // Add to layout
+        JPanel container = new JPanel(new BorderLayout());
+        container.add(panelSpectogram, BorderLayout.CENTER);
+        container.setBorder(new TitledBorder(" The Spectogram : FFT computation "));
+        panelCenter.add(container);
+    }
+
+    private void initAudioStreamPanel() {
+
+        // Create
+        panelAudioStream = new MusicLiveAudioStreamPanel();
+
+        // Add to layout
+        JPanel containerPanel = new JPanel(new BorderLayout());
+        containerPanel.add(panelAudioStream, BorderLayout.CENTER);
+        containerPanel.setBorder(new TitledBorder(" The Audio Stream Panel "));
+        panelCenter.add(containerPanel);
+    }
+
+    private void initResultPanel() {
+        int rows = 1, cols = 2;
+        panelResult = new JPanel(new BorderLayout());
+        panelKey = new MusicLiveKeyPanel();
+        panelResult.add(panelKey);
+        panelCenter.add(panelResult);
+    }
 }
 
 
